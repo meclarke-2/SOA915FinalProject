@@ -91,3 +91,6 @@ const PORT = process.env.PORT || 3002;
 mongoose.connect(process.env.MONGO_URI || 'mongodb://product-db:27017/products')
   .then(() => { console.log('product-svc connected'); app.listen(PORT, () => console.log(`product-svc on ${PORT}`)); })
   .catch(err => { console.error(err); process.exit(1); });
+
+// Export for testing
+if (require.main !== module) module.exports = app;

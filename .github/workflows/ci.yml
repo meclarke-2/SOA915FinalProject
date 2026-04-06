@@ -1,0 +1,38 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20
+
+    - name: Install dependencies (vendor)
+      run: |
+        cd vendor-svc
+        npm install
+
+    - name: Install dependencies (product)
+      run: |
+        cd product-svc
+        npm install
+
+    - name: Run tests (vendor)
+      run: |
+        cd vendor-svc
+        npm test
+
+    - name: Run tests (product)
+      run: |
+        cd product-svc
+        npm test

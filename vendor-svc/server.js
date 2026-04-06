@@ -36,7 +36,10 @@ app.post('/api/vendors', async (req, res, next) => {
 });
 
 app.get('/api/vendors/:id', async (req, res, next) => {
-  try { res.json(await Vendor.findById(req.params.id)) || res.status(404).json({ error: 'not found' }); }
+  try {
+    const v = await Vendor.findById(req.params.id);
+    v ? res.json(v) : res.status(404).json({ error: 'not found' });
+  }
   catch (err) { next(err); }
 });
 
@@ -63,3 +66,6 @@ const PORT = process.env.PORT || 3001;
 mongoose.connect(process.env.MONGO_URI || 'mongodb://vendor-db:27017/vendors')
   .then(() => { console.log('vendor-svc connected'); app.listen(PORT, () => console.log(`vendor-svc on ${PORT}`)); })
   .catch(err => { console.error(err); process.exit(1); });
+
+// Export for testing
+if (require.main !== module) module.exports = app;
