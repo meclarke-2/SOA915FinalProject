@@ -5,11 +5,21 @@ services:
     image: mongo:7
     volumes:
       - vendor-db:/data/db
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   product-db:
     image: mongo:7
     volumes:
       - product-db:/data/db
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   vendor-svc:
     build: ./vendor-svc
@@ -18,6 +28,11 @@ services:
       PORT: 3001
       MONGO_URI: mongodb://vendor-db:27017/vendors
     depends_on: [vendor-db]
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   product-svc:
     build: ./product-svc
@@ -27,6 +42,36 @@ services:
       MONGO_URI: mongodb://product-db:27017/products
       VENDOR_SERVICE_URL: http://vendor-svc:3001
     depends_on: [product-db, vendor-svc]
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  loki:
+    image: grafana/loki:2.9.0
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki-config.yml:/etc/loki/config.yml:ro
+    command: -config.file=/etc/loki/config.yml
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  grafana:
+    image: grafana/grafana:10.2.0
+    ports:
+      - "3003:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
   vendor-db:
